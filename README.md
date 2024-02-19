@@ -1,3 +1,10 @@
-# Northcoders News API
+nc-news-api
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+Install dotenv and add .env.development and .env.test as required
+
+Add the following to the .env files:
+PGDATABASE=database_name_here
+
+Ensure that all .env files are .gitignored
+
+Dependencies can be found in the package.json file
