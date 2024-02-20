@@ -3,6 +3,7 @@ const request = require('supertest')
 const db = require('../db/connection.js')
 const data = require('../db/data/test-data/index.js')
 const seed = require('../db/seeds/seed.js')
+const endpointsFile = require('../endpoints.json')
 
 beforeEach(() => seed(data))
 afterAll(() => db.end())
@@ -34,9 +35,7 @@ describe ('app', () => {
             .expect(200)
             .then((response) => {
                 const endPoints = response.body.endpoints
-                expect(endPoints).toHaveProperty('GET /api', expect.any(Object))
-                expect(endPoints).toHaveProperty('GET /api/topics', expect.any(Object))
-                expect(endPoints).toHaveProperty('GET /api/articles', expect.any(Object))
+                expect(endPoints).toEqual(endpointsFile)
             })
         })
         test('each endpoint contains a description, queries, and exampleResponse property', () => {
