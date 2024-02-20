@@ -17,4 +17,12 @@ function readEndpoints() {
     })
 }
 
-module.exports = {readAllTopics, readEndpoints}
+function readArticleById(articleID) {
+    let sqlString = `SELECT * FROM articles WHERE article_id = $1`
+    return db.query(sqlString, [articleID])
+    .then((result) => {
+        return (result.rows.length === 0) ? Promise.reject({status: 404, msg: 'no article with that id'}) : result.rows[0]
+    })
+}
+
+module.exports = {readAllTopics, readEndpoints, readArticleById}
