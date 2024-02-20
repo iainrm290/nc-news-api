@@ -27,4 +27,30 @@ describe ('app', () => {
             })
         })
     })
+    describe('GET /api', () => {
+        test('responds with an object containing all available endpoints', () => {
+            return request(app)
+            .get('/api')
+            .expect(200)
+            .then((response) => {
+                const endPoints = response.body.endpoints
+                expect(endPoints).toHaveProperty('GET /api', expect.any(Object))
+                expect(endPoints).toHaveProperty('GET /api/topics', expect.any(Object))
+                expect(endPoints).toHaveProperty('GET /api/articles', expect.any(Object))
+            })
+        })
+        test('each endpoint contains a description, queries, and exampleResponse property', () => {
+            return request(app)
+            .get('/api')
+            .expect(200)
+            .then((response) => {
+                const endPoints = response.body.endpoints
+                for (const value in endPoints) {
+                    expect(endPoints[value]).toHaveProperty('description', expect.any(String))
+                    expect(endPoints[value]).toHaveProperty('queries', expect.any(Array))
+                    expect(endPoints[value]).toHaveProperty('exampleResponse', expect.any(Object))
+                }
+            })
+        })
+    })
 })

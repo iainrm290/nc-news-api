@@ -1,4 +1,5 @@
 const db = require('../db/connection.js')
+const fs = require('fs/promises')
 
 function readAllTopics() {
     let sqlString = `SELECT * FROM topics`
@@ -9,4 +10,11 @@ function readAllTopics() {
     })
 }
 
-module.exports = {readAllTopics}
+function readEndpoints() {
+    return fs.readFile(`${__dirname}/../endpoints.json`, 'utf8')
+    .then((data) => {
+        return JSON.parse(data)
+    })
+}
+
+module.exports = {readAllTopics, readEndpoints}
