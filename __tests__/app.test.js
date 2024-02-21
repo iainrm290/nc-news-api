@@ -80,21 +80,66 @@ describe('app', () => {
         })
         test('400: responds with a 400 error for an invalid request', () => {
             return request(app)
-            .get('/api/articles/music')
-            .expect(400)
-            .then((response) => {
-                const err = response.body
-                expect(err.msg).toBe('bad request')
-            })
+                .get('/api/articles/music')
+                .expect(400)
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
         })
         test('404: responds with a 404 for a valid id which does not exist', () => {
             return request(app)
-            .get('/api/articles/1000')
-            .expect(404)
-            .then((response) => {
-                const errMsg = response.body.msg
-                expect(errMsg).toBe('no article with that id')
-            })
+                .get('/api/articles/1000')
+                .expect(404)
+                .then((response) => {
+                    const errMsg = response.body.msg
+                    expect(errMsg).toBe('no article with that id')
+                })
         })
+    })
+    describe('GET api/articles', () => {
+        test('200: responds with status 200 for successful request', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+        })
+        test('responds with an array of the correct length representing all articles', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then((response) => {
+                    const articles = response.body.articles
+                    expect(articles).toHaveLength(13)
+                })
+        })
+        test('responds with an array of article objects without a body property', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then((response) => {
+                    const articles = Object.keys(response.body.articles[0])
+                    //console.log(articles);
+                    expect(articles).toEqual([
+                        'article_id',
+                        'author',
+                        'title',
+                        'topic',
+                        'created_at',
+                        'votes',
+                        'article_img_url',
+                        'comment_count'
+                    ])
+                })
+        })
+        test('responds with an array of articles sorted by date in descending order', () => {
+            return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then((response) => {
+                    const articles = response.body.articles
+                    expect(articles).toBeSortedBy('created_at', { descending: true })
+                })
+        })
+
     })
 })
