@@ -1,4 +1,4 @@
-const {readAllTopics, readEndpoints, readArticleById, readAllArticles} = require('../models/app.model.js')
+const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId} = require('../models/app.model.js')
 
 
 function getAllTopics(request, response, next) {
@@ -33,7 +33,7 @@ function getArticleById(request, response, next) {
     })
 }
 
-function getAllArticles(resquest, response, next) {
+function getAllArticles(request, response, next) {
     readAllArticles()
     .then((articles) => {
         response.status(200).send({articles: articles})
@@ -43,4 +43,15 @@ function getAllArticles(resquest, response, next) {
     })
 }
 
-module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles}
+function getCommentsByArticleId(request, response, next) {
+    const articleID = request.params.article_id
+    readCommentsByArticleId(articleID)
+    .then((comments) => {
+        response.status(200).send({comments: comments})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId}

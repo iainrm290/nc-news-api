@@ -47,4 +47,13 @@ function readAllArticles() {
     })
 }
 
-module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles}
+function readCommentsByArticleId(articleID) {
+    let sqlString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY comments.created_at ASC`
+    return db.query(sqlString, [articleID])
+    .then((result) => {
+        return (result.rows.length === 0) ? Promise.reject({status: 404, msg: 'no comments for that article'}) : result.rows
+    })
+
+}
+
+module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId}
