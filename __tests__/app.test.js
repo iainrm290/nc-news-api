@@ -118,7 +118,6 @@ describe('app', () => {
                 .expect(200)
                 .then((response) => {
                     const articles = Object.keys(response.body.articles[0])
-                    //console.log(articles);
                     expect(articles).toEqual([
                         'article_id',
                         'author',
@@ -130,7 +129,8 @@ describe('app', () => {
                         'comment_count'
                     ])
                 })
-        })
+
+            })
         test('responds with an array of articles sorted by date in descending order', () => {
             return request(app)
                 .get('/api/articles')
@@ -142,4 +142,52 @@ describe('app', () => {
         })
 
     })
+    describe('GET /api/articles/:article_id/comments', () => {
+        test('200: responds with status 200 for successful request', () => {
+            return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                })
+
+        
+        test('responds with an array of comment objects each with the required properties', () => {
+            return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then((response) => {
+                    const comments = Object.keys(response.body.comments[0])
+
+                    expect(comments).toEqual(['comment_id', 'body', 'article_id', 'author', 'votes', 'created_at' ])
+                })
+        })
+        test('responds with an array of comments of the expected length sorted by date in ascending order', () => {
+            return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then((response) => {
+                const comments = response.body.comments
+                expect(comments).toHaveLength(11)
+                expect(comments).toBeSortedBy('created_at', { descending: false })
+            })
+        })
+        test('404: responds with status 404 for an article id that has no comments', () => {
+            return request(app)
+            .get('/api/articles/2/comments')
+            .expect(404)
+            .then((response) => {
+                const err = response.body
+                expect(err.msg).toBe('no comments for that article')
+            })
+        })
+        test('400: responds with status 400 for an invalid request', () => {
+            return request(app)
+            .get('/api/articles/music/comments')
+            .expect(400)
+            .then((response) => {
+                const err = response.body
+                expect(err.msg).toBe('bad request')
+            })
+        })
+    })
 })
+
