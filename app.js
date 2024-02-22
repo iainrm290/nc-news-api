@@ -1,5 +1,5 @@
 const express = require('express')
-const { getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId} = require('./controllers/app.controller')
+const { getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId} = require('./controllers/app.controller')
 const app = express()
 
 app.use(express.json())
@@ -14,6 +14,8 @@ app.get('/api/articles', getAllArticles)
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 
+app.post('/api/articles/:article_id/comments', postCommentOnArticleId)
+
 app.use((err, request, response, next) => {
     if (err.status && err.msg) {
         response.status(err.status).send({msg: err.msg})
@@ -25,10 +27,19 @@ app.use((err, request, response, next) => {
 app.use((err, request, response, next) => {
     if (err.code === '22P02') {
         response.status(400).send({msg: 'bad request'})
-    } else {
-        response.status(500).send({ msg: 'Internal server error' })
     }
-    
+
+    if (err.code === '23503') {
+        response.status(404).send({msg: 'bad request - does not exist'})
+    }
+
+    else {next(err)}
 })
+
+app.use((err, request, response, next) => {
+    response.status(err.code || 500).send({msg: err.message})
+}) 
+    
+
 
 module.exports = app

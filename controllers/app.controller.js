@@ -1,4 +1,4 @@
-const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId} = require('../models/app.model.js')
+const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle} = require('../models/app.model.js')
 
 
 function getAllTopics(request, response, next) {
@@ -54,4 +54,21 @@ function getCommentsByArticleId(request, response, next) {
     })
 }
 
-module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId}
+function postCommentOnArticleId(request, response, next) {
+    const articleID = request.params.article_id
+    const commentToPost = request.body
+    const keysToCheck = Object.keys(commentToPost)
+    if (keysToCheck.length !==  2) {
+        return response.status(400).send({msg: 'bad request'})
+    }
+
+    addCommentOnArticle(articleID, commentToPost)
+    .then((postedComment) => {
+        response.status(201).send(postedComment)
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId}
