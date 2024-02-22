@@ -130,7 +130,7 @@ describe('app', () => {
                     ])
                 })
 
-            })
+        })
         test('responds with an array of articles sorted by date in descending order', () => {
             return request(app)
                 .get('/api/articles')
@@ -147,9 +147,9 @@ describe('app', () => {
             return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
-                })
+        })
 
-        
+
         test('responds with an array of comment objects each with the required properties', () => {
             return request(app)
                 .get('/api/articles/1/comments')
@@ -157,36 +157,113 @@ describe('app', () => {
                 .then((response) => {
                     const comments = Object.keys(response.body.comments[0])
 
-                    expect(comments).toEqual(['comment_id', 'body', 'article_id', 'author', 'votes', 'created_at' ])
+                    expect(comments).toEqual(['comment_id', 'body', 'article_id', 'author', 'votes', 'created_at'])
                 })
         })
-        test('responds with an array of comments of the expected length sorted by date in ascending order', () => {
+        test('responds with an array of comments of the expected length sorted by date in descending order', () => {
             return request(app)
-            .get('/api/articles/1/comments')
-            .expect(200)
-            .then((response) => {
-                const comments = response.body.comments
-                expect(comments).toHaveLength(11)
-                expect(comments).toBeSortedBy('created_at', { descending: false })
-            })
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then((response) => {
+                    const comments = response.body.comments
+                    expect(comments).toHaveLength(11)
+                    expect(comments).toBeSortedBy('created_at', { descending: true })
+                })
         })
         test('404: responds with status 404 for an article id that has no comments', () => {
             return request(app)
-            .get('/api/articles/2/comments')
-            .expect(404)
-            .then((response) => {
-                const err = response.body
-                expect(err.msg).toBe('no comments for that article')
-            })
+                .get('/api/articles/2/comments')
+                .expect(404)
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('no comments for that article')
+                })
         })
         test('400: responds with status 400 for an invalid request', () => {
             return request(app)
-            .get('/api/articles/music/comments')
-            .expect(400)
-            .then((response) => {
-                const err = response.body
-                expect(err.msg).toBe('bad request')
-            })
+                .get('/api/articles/music/comments')
+                .expect(400)
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
+        })
+    })
+    describe('POST /api/articles/:article_id/comments', () => {
+        test('201: responds with a 201 for a successful request', () => {
+            return request(app)
+                .post('/api/articles/2/comments')
+                .expect(201)
+                .send({
+                    username: 'lurker',
+                    body: '1 2, 1 2, this is just, a, test'
+                })
+        })
+        test('responds with the posted comment', () => {
+            return request(app)
+                .post('/api/articles/2/comments')
+                .expect(201)
+                .send({
+                    username: 'lurker',
+                    body: '1 2, 1 2, this is just, a, test'
+                })
+                .then((response) => {
+                    expect(response.body).toEqual({
+                        comment_id: 19,
+                        body: '1 2, 1 2, this is just, a, test',
+                        article_id: 2,
+                        author: 'lurker',
+                        votes: 0,
+                        created_at: expect.any(String)
+                    })
+                })
+        })
+        test('400: responds with status 400 for an invalid request', () => {
+            return request(app)
+                .post('/api/articles/music/comments')
+                .expect(400)
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
+        })
+        test('404: responds with a 404 if username does not exist', () => {
+            return request(app)
+                .post('/api/articles/2/comments')
+                .expect(404)
+                .send({
+                    username: 'bernard',
+                    body: '1 2, 1 2, this is just, a, test'
+                })
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request - does not exist')
+                })
+        })
+        test('404: responds with a 404 if article does not exist', () => {
+            return request(app)
+                .post('/api/articles/1000/comments')
+                .expect(404)
+                .send({
+                    username: 'bernard',
+                    body: '1 2, 1 2, this is just, a, test'
+                })
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request - does not exist')
+                })
+        })
+        test('400: responds with a 400 if request body is not as expected', () => {
+            return request(app)
+                .post('/api/articles/2/comments')
+                .expect(400)
+                .send({
+                    body: '1 2, 1 2, this is just, a, test'
+                })
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
         })
     })
 })

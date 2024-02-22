@@ -65,5 +65,21 @@
                 "created_at": "2020-01-01T03:08:00.000Z"
             }
         ]
+    },
+    "POST /api/articles/:article_id/comments": {
+        "description": "adds a comment to an article bu article_id and serves up the posted comment",
+        "exampleRequestBody": {
+            "username": "username",
+            "body": "comment"
+        },
+        "queries": [],
+        "exampleResponse": {
+            "comment_id": 19,
+            "body": "1 2, 1 2, this is just, a, test",
+            "article_id": 2,
+            "author": "lurker",
+            "votes": 0,
+            "created_at" : "1589577540000"
+        }
     }
 }

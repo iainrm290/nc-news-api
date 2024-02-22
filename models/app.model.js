@@ -48,12 +48,21 @@ function readAllArticles() {
 }
 
 function readCommentsByArticleId(articleID) {
-    let sqlString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY comments.created_at ASC`
+    let sqlString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY comments.created_at DESC`
     return db.query(sqlString, [articleID])
     .then((result) => {
         return (result.rows.length === 0) ? Promise.reject({status: 404, msg: 'no comments for that article'}) : result.rows
     })
-
 }
 
-module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId}
+function addCommentOnArticle(articleID, {username, body}) {
+    let sqlString = `INSERT INTO comments (article_id, author, body)
+    VALUES ($1, $2, $3)
+    RETURNING *`
+    return db.query(sqlString, [articleID, username, body])
+    .then((result) => {
+        return (result.rows[0])
+    })
+}
+
+module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle}
