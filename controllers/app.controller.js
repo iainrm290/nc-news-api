@@ -1,4 +1,4 @@
-const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId, deleteFromComments} = require('../models/app.model.js')
+const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, readAllUsers, addCommentOnArticle, updateArticleByArticleId, deleteFromComments} = require('../models/app.model.js')
 
 
 function getAllTopics(request, response, next) {
@@ -54,6 +54,15 @@ function getCommentsByArticleId(request, response, next) {
     })
 }
 
+function getAllUsers(request, response, next) {
+    readAllUsers()
+    .then((users) => {
+        response.status(200).send({users: users})
+    })
+    .catch((err) =>
+    next(err))
+}
+
 function postCommentOnArticleId(request, response, next) {
     const articleID = request.params.article_id
     const commentToPost = request.body
@@ -98,4 +107,4 @@ function deleteCommentByCommentId(request, response, next) {
     })
 }
 
-module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId, patchArticleByArticleId, deleteCommentByCommentId}
+module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, getAllUsers,postCommentOnArticleId, patchArticleByArticleId, deleteCommentByCommentId}
