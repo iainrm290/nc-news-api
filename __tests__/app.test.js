@@ -359,6 +359,27 @@ describe('app', () => {
                 
         })
     })
+    describe('GET /api/users', () => {
+        test('200: responds with 200 for a successful request', () => {
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+        })
+        test('responds with an array of all user objects, each with username, name, and avatar_url properties', () => {
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then((response) => {
+                const users = response.body.users
+                expect(users).toHaveLength(4)
+                for (const user of users) {
+                    expect(user).toHaveProperty('username', expect.any(String))
+                    expect(user).toHaveProperty('name', expect.any(String))
+                    expect(user).toHaveProperty('avatar_url', expect.any(String))
+                }   
+            })
+        })
+    })
 
 })
 

@@ -54,6 +54,15 @@ function readCommentsByArticleId(articleID) {
     })
 }
 
+function readAllUsers() {
+    let sqlString = `SELECT * FROM users`
+    return db.query(sqlString)
+    .then((result) => {
+        const users = result.rows
+        return users
+    })
+}
+
 function addCommentOnArticle(articleID, {username, body}) {
     let sqlString = `INSERT INTO comments (article_id, author, body)
     VALUES ($1, $2, $3)
@@ -86,4 +95,4 @@ function deleteFromComments(commentID) {
     })
 }
 
-module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId, deleteFromComments}
+module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, readAllUsers, addCommentOnArticle, updateArticleByArticleId, deleteFromComments}
