@@ -19,7 +19,6 @@ function getAllEndpoints(request, response, next) {
         .catch((err) => {
             next(err)
         })
-    
 }
 
 function getArticleById(request, response, next) {
