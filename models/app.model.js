@@ -64,7 +64,7 @@ function addCommentOnArticle(articleID, {username, body}) {
     })
 }
 
-function updateArticleByArticleId(articleID, incVotes){
+function updateArticleByArticleId(articleID, incVotes) {
     let sqlString = `
     UPDATE articles
     SET votes = votes + $2
@@ -76,4 +76,14 @@ function updateArticleByArticleId(articleID, incVotes){
     })
 }
 
-module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId}
+function deleteFromComments(commentID) {
+    let sqlString = `DELETE FROM comments WHERE comment_id = $1 RETURNING *`
+    return db.query(sqlString, [commentID])
+    .then((result) => {
+        if (result.rowCount === 0) {
+            return Promise.reject({status: 404, msg: 'no comment with that id'})
+        }
+    })
+}
+
+module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId, deleteFromComments}

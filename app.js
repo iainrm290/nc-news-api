@@ -1,5 +1,5 @@
 const express = require('express')
-const { getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId, patchArticleByArticleId} = require('./controllers/app.controller')
+const { getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId, patchArticleByArticleId, deleteCommentByCommentId} = require('./controllers/app.controller')
 const app = express()
 
 app.use(express.json())
@@ -18,6 +18,8 @@ app.post('/api/articles/:article_id/comments', postCommentOnArticleId)
 
 app.patch('/api/articles/:article_id', patchArticleByArticleId)
 
+app.delete('/api/comments/:comment_id', deleteCommentByCommentId)
+
 app.use((err, request, response, next) => {
     if (err.status && err.msg) {
         response.status(err.status).send({msg: err.msg})
@@ -32,7 +34,7 @@ app.use((err, request, response, next) => {
     }
 
     if (err.code === '23503') {
-        response.status(404).send({msg: 'bad request - does not exist'})
+        response.status(404).send({msg: 'does not exist'})
     }
 
     else {next(err)}
