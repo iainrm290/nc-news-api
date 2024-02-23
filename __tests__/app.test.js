@@ -237,7 +237,7 @@ describe('app', () => {
                 })
                 .then((response) => {
                     const err = response.body
-                    expect(err.msg).toBe('bad request - does not exist')
+                    expect(err.msg).toBe('does not exist')
                 })
         })
         test('404: responds with a 404 if article does not exist', () => {
@@ -250,7 +250,7 @@ describe('app', () => {
                 })
                 .then((response) => {
                     const err = response.body
-                    expect(err.msg).toBe('bad request - does not exist')
+                    expect(err.msg).toBe('does not exist')
                 })
         })
         test('400: responds with a 400 if request body is not as expected', () => {
@@ -337,5 +337,28 @@ describe('app', () => {
                 })
         })
     })
+    describe('DELETE /api/comments/:comment_id', () => {
+        test('204: responds with 204 for successful delete request', () => {
+            return request(app)
+                .delete('/api/comments/1')
+                .expect(204)
+        })
+        test('404: responds with 404 if comment_id does not exist', () => {
+            return request(app)
+                .delete('/api/comments/1000')
+                .expect(404)
+        })
+        test('400: responds with 400 for an invalid request', () => {
+            return request(app)
+                .delete('/api/comments/music')
+                .expect(400)
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
+                
+        })
+    })
+
 })
 

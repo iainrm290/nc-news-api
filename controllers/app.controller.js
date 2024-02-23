@@ -1,4 +1,4 @@
-const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId} = require('../models/app.model.js')
+const {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId, deleteFromComments} = require('../models/app.model.js')
 
 
 function getAllTopics(request, response, next) {
@@ -84,8 +84,18 @@ function patchArticleByArticleId(request, response, next){
     })
     .catch((err) => {
         next(err)
-    })
-    
+    }) 
 }
 
-module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId, patchArticleByArticleId}
+function deleteCommentByCommentId(request, response, next) {
+    const commentID = request.params.comment_id
+    deleteFromComments(commentID)
+    .then((result) => {
+        response.status(204).send()
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = {getAllTopics, getAllEndpoints, getArticleById, getAllArticles, getCommentsByArticleId, postCommentOnArticleId, patchArticleByArticleId, deleteCommentByCommentId}
