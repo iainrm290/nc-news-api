@@ -266,5 +266,76 @@ describe('app', () => {
                 })
         })
     })
+    describe('PATCH /api/articles/:article_id', () => {
+        test('200: responds with 200 for a succesful request', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({inc_votes: 1})
+            .expect(200)
+        })
+        test('responds with the updated article', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({inc_votes: 1})
+            .expect(200)
+            .then((response) => {
+                expect(response.body.updated_article).toEqual({
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: '2020-07-09T20:11:00.000Z',
+                    votes: 101,
+                    article_img_url:
+                        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                })
+            })
+            
+        })
+        test('responds with the updated article with votes decremented if given a minus number', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({inc_votes: -1})
+            .expect(200)
+            .then((response) => {
+                expect(response.body.updated_article.votes).toEqual(99)
+            })
+            
+        })
+        test('404: responds with a 404 if article does not exist', () => {
+            return request(app)
+                .patch('/api/articles/1000')
+                .expect(404)
+                .send({inc_votes: 1})
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('no article with that id')
+                })
+        })
+        test('400: responds with a 400 for an invalid request', () => {
+            return request(app)
+                .patch('/api/articles/music')
+                .expect(400)
+                .send({inc_votes: 1})
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
+        })
+        test('400: responds with a 400 if request body is not as expected', () => {
+            return request(app)
+                .patch('/api/articles/1')
+                .expect(400)
+                .send({
+                    username: 'bernard',
+                    body: '1 2, 1 2, this is just, a, test'
+                })
+                .then((response) => {
+                    const err = response.body
+                    expect(err.msg).toBe('bad request')
+                })
+        })
+    })
 })
 

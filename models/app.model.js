@@ -39,7 +39,6 @@ function readAllArticles() {
     GROUP BY articles.article_id
     ORDER BY articles.created_at DESC
     `
-
     return db.query(sqlString)
     .then((result) => {
         const rows = result.rows
@@ -65,4 +64,16 @@ function addCommentOnArticle(articleID, {username, body}) {
     })
 }
 
-module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle}
+function updateArticleByArticleId(articleID, incVotes){
+    let sqlString = `
+    UPDATE articles
+    SET votes = votes + $2
+    WHERE article_id = $1
+    RETURNING *;`
+    return db.query(sqlString, [articleID, incVotes])
+    .then((result) => {
+        return (result.rows.length === 0) ? Promise.reject({status: 404, msg: 'no article with that id'}) : result.rows[0]
+    })
+}
+
+module.exports = {readAllTopics, readEndpoints, readArticleById, readAllArticles, readCommentsByArticleId, addCommentOnArticle, updateArticleByArticleId}
