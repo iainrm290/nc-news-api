@@ -34,7 +34,8 @@ function getArticleById(request, response, next) {
 }
 
 function getAllArticles(request, response, next) {
-    readAllArticles()
+    const topic = request.query.topic
+    readAllArticles(topic)
     .then((articles) => {
         response.status(200).send({articles: articles})
     })

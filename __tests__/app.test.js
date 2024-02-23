@@ -380,6 +380,36 @@ describe('app', () => {
             })
         })
     })
+    describe('GET /api/articles?topic=', () => {
+        test('responds with array of article objects filtered by the query topic', () => {
+            return request(app)
+            .get('/api/articles?topic=cats')
+            .expect(200)
+            .then((response) => {
+                const articles = response.body.articles
+                expect(articles).toHaveLength(1)
+                expect(articles[0].topic).toEqual('cats')
+            })
+        })
+        test('400: responds with 400 for invalid request', () => {
+            return request(app)
+            .get('/api/articles?topic=invalidTopic')
+            .expect(400)
+            .then((response) => {
+                const err = response.body
+                expect(err.msg).toBe('bad request')
+            })
+        })
+        test('200: responds with empty array for valid topic with no associated articles', () => {
+            return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then((response) => {
+                const articles = response.body.articles
+                expect(articles).toHaveLength(0)
+            })
+        })
+    })
 
 })
 
