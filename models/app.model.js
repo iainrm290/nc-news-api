@@ -25,7 +25,8 @@ function readArticleById(articleID) {
     })
 }
 
-function readAllArticles() {
+function readAllArticles(topic) {
+    const sqlValues = []
     let sqlString = `
     SELECT 
     articles.article_id, articles.author,
@@ -35,14 +36,24 @@ function readAllArticles() {
     COUNT(comments.body) AS comment_count
     FROM articles
     LEFT JOIN comments
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC
-    `
-    return db.query(sqlString)
+    ON articles.article_id = comments.article_id`
+    if (topic) {
+        sqlString += ` WHERE topic = $1`
+        sqlValues.push(topic)
+    }
+    
+    sqlString += ` GROUP BY articles.article_id
+    ORDER BY articles.created_at DESC`
+    return db.query(sqlString, sqlValues)
     .then((result) => {
         const rows = result.rows
-        return rows
+        return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+        .then((result) => {
+            if (rows.length === 0 && result.rows.length === 0) {
+                return Promise.reject({status: 400, msg: 'bad request'})
+            }
+            return rows
+        })
     })
 }
 
