@@ -75,7 +75,7 @@ describe('app', () => {
                         article_img_url:
                             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                     }
-                    expect(article).toEqual(articleOne)
+                    expect(article).toMatchObject(articleOne)
                 })
         })
         test('400: responds with a 400 error for an invalid request', () => {
@@ -407,6 +407,17 @@ describe('app', () => {
             .then((response) => {
                 const articles = response.body.articles
                 expect(articles).toHaveLength(0)
+            })
+        })
+    })
+    describe('Feature request: GET /api/articles/:article_id(comment count)', () => {
+        test('responds with a comment count in the requested article', () => {
+            return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then((response) => {
+                const article = response.body.article
+                expect(article).toMatchObject({comment_count: 11})
             })
         })
     })
